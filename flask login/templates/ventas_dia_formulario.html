@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <nav>
+        <li>
+            <li><a href="{{url_for('home')}}">Home</a></li>
+        </li>
+    </nav>
+    <form method="POST" action="{{ url_for('ventas_dia') }}">
+        <label for="fecha">Seleccione la fecha:</label>
+        <input type="date" id="fecha" name="fecha" required>
+        <button type="submit">Ver Ventas</button>
+    </form>
+
+
+
+</body>
+</html>

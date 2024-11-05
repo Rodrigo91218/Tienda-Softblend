@@ -4,6 +4,7 @@ from functools import wraps
 from datetime import datetime
 from reportlab.pdfgen import canvas
 import io
+from sqlalchemy import func
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_1234'
@@ -54,6 +55,10 @@ class Factura(db.Model):
     subtotal = db.Column(db.Float, nullable=False)
     iva = db.Column(db.Float, nullable=False)
     total = db.Column(db.Float, nullable=False)
+
+    __table_args__ = (
+        db.Index('ix_factura_fecha', 'fecha'), 
+    )
 
 #-----------------------------------------------------------------------TABLA CLIENTE
 
@@ -233,6 +238,37 @@ def eliminar_producto():
 
     return render_template('eliminar_producto.html', producto=producto)
 
+@app.route('/ventas_dia', methods=['GET', 'POST'])
+@login_required
+def ventas_dia():
+    if request.method == 'POST':
+        fecha = request.form['fecha']
+        
+        try:
+            fecha = datetime.strptime(fecha, '%Y-%m-%d')
+            ventas = Factura.query.filter(db.func.date(Factura.fecha) == fecha.date()).all()
+            
+            ventas_detalle = []
+            total_dia = 0
+
+            for venta in ventas:
+                perfume = Perfume.query.get(venta.pedido_id)  
+                if perfume:
+                    ventas_detalle.append({
+                        'perfume': perfume.nombre,
+                        'cantidad': venta.cantidad,
+                        'monto': venta.precio_total
+                    })
+                    total_dia += venta.total  
+
+            return render_template('ventas_dia.html', ventas_detalle=ventas_detalle, total_dia=total_dia)
+        except ValueError:
+            flash("Formato de fecha inválido")
+            return redirect(url_for('ventas_dia'))
+
+    return render_template('ventas_dia_formulario.html')
+
+
 #-----------------------------------------------------------------------PARTE DEL CLIENTE
 #VER CATALOGO
 @app.route('/catalogo_cliente')
@@ -369,50 +405,64 @@ def pagar():
 
     return redirect(url_for('ver_carrito'))
 
+def generar_pedido_id():
+    # Asumiendo que tienes un modelo Pedido que tiene un campo id
+    max_pedido = db.session.query(func.max(Pedido.id)).scalar()
+    return max_pedido + 1 if max_pedido else 1
+
+
 def generar_numero_factura():
-    ultima_factura = Factura.query.order_by(Factura.numero_factura.desc()).first()
-    if ultima_factura:
-        return int(ultima_factura.numero_factura) + 1 
+    # Obtener el máximo número de factura existente, sin el prefijo
+    max_factura = db.session.query(func.max(func.cast(func.substr(Factura.numero_factura, 6), db.Integer))).scalar()
+    
+    # Si no hay facturas, iniciar en 1
+    if max_factura is None:
+        max_factura = 1
     else:
-        return 1
+        max_factura += 1
+
+    # Formatear el número de factura con ceros a la izquierda
+    numero_factura = f"0000-{max_factura:08}"
+    return numero_factura
 
 @app.route('/datos_cliente', methods=['GET', 'POST'])
 def datos_cliente():
     if request.method == 'POST':
-        
-        nombre = request.form['nombre']
-        apellido = request.form['apellido']
-        localidad = request.form['localidad']
-        domicilio = request.form['domicilio']
-        codigo_postal = request.form['codigo_postal']
-        telefono = request.form['telefono']
-        email = request.form['email']
-
+        # Recoger datos del cliente
         nuevo_cliente = Cliente(
-            nombre=nombre,
-            apellido=apellido,
-            localidad=localidad,
-            domicilio=domicilio,
-            codigo_postal=codigo_postal,
-            telefono=telefono,
-            email=email
+            nombre=request.form['nombre'],
+            apellido=request.form['apellido'],
+            localidad=request.form['localidad'],
+            domicilio=request.form['domicilio'],
+            codigo_postal=request.form['codigo_postal'],
+            telefono=request.form['telefono'],
+            email=request.form['email']
         )
         db.session.add(nuevo_cliente)
         db.session.commit()
-       
+
         carrito = session.get('carrito', {})
-        subtotal = sum(Perfume.query.get(int(pid)).precio * cantidad for pid, cantidad in carrito.items())
+        if not carrito:
+            flash("El carrito está vacío.")
+            return redirect(url_for('ver_carrito'))
+
+        subtotal = 0
+        for perfume_id, cantidad in carrito.items():
+            perfume = Perfume.query.get(perfume_id)
+            if perfume:
+                subtotal += perfume.precio * cantidad
+
         iva = subtotal * 0.21
         total = subtotal + iva
 
         nueva_factura = Factura(
-            pedido_id=nuevo_cliente.id,  
+            pedido_id=generar_pedido_id(),  # Define esta función si es necesaria
             tipo_factura='A',
             numero_factura=generar_numero_factura(),
             fecha=datetime.now(),
             cantidad=sum(carrito.values()),
             codigo_descripcion="Pedido de perfumes",  
-            precio_unitario=subtotal,  
+            precio_unitario=subtotal / sum(carrito.values()),  # Ajusta según sea necesario
             precio_total=subtotal,
             subtotal=subtotal,
             iva=iva,
@@ -421,11 +471,7 @@ def datos_cliente():
         db.session.add(nueva_factura)
         db.session.commit()
 
-        
         session.pop('carrito', None)
-        
-        
-        print("Contenido del carrito después de la compra:", session.get('carrito', {}))
 
         flash('Compra realizada con éxito. Gracias por tu pedido.')
         return redirect(url_for('descargar_factura', factura_id=nueva_factura.id))
@@ -436,9 +482,17 @@ def datos_cliente():
 @app.route('/descargar_factura/<int:factura_id>')
 def descargar_factura(factura_id):
     factura = Factura.query.get(factura_id)
-    cliente = Cliente.query.get(factura.pedido_id)
-
+    if not factura:
+        return "Factura no encontrada", 404  # Manejo de error si la factura no existe
     
+    pedido = Pedido.query.get(factura.pedido_id)
+    if not pedido:
+        return "Pedido no encontrado", 404  # Manejo de error si el pedido no existe
+    
+    cliente = Cliente.query.get(pedido.cliente_id)  # Asegúrate de usar el campo correcto para el cliente
+    if not cliente:
+        return "Cliente no encontrado", 404  # Manejo de error si el cliente no existe
+
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer)
     c.drawString(100, 750, f"Factura #{factura.numero_factura}")
@@ -448,7 +502,6 @@ def descargar_factura(factura_id):
     c.drawString(100, 670, f"Teléfono: {cliente.telefono}")
     c.drawString(100, 650, f"Email: {cliente.email}")
 
-   
     c.drawString(100, 600, "Detalles de la compra:")
     y_position = 580
     for perfume_id, cantidad in session.get('carrito', {}).items():
@@ -465,11 +518,7 @@ def descargar_factura(factura_id):
     c.save()
 
     buffer.seek(0)
-
-
     return send_file(buffer, as_attachment=True, download_name=f"factura_{factura.numero_factura}.pdf", mimetype='application/pdf')
-
-
 
 #_________________________
 if __name__ == '__main__':

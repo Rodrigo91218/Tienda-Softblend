@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <nav>
+        <li>
+            <li><a href="{{url_for('home')}}">Home</a></li>
+        </li>
+    </nav>
+    <h2>Ventas del {{ request.form['fecha'] }}</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Perfume</th>
+            <th>Cantidad</th>
+            <th>Monto</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for venta in ventas_detalle %}
+        <tr>
+            <td>{{ venta.perfume }}</td>
+            <td>{{ venta.cantidad }}</td>
+            <td>${{ venta.monto }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Total del día: ${{ total_dia }}</h3>
+</body>
+</html>
