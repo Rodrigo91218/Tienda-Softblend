@@ -1,0 +1,24 @@
+<body>
+    <div id="agrupar">
+      <header id="cabecera">
+        <span id="titulo"></span>
+      </header>
+      <nav id="menu">
+        <ul>
+          <li>
+	  </li>
+        </ul>
+      </nav>
+      <section id="seccion">
+        <article>
+          <p>
+            
+          </p>
+        </article>
+      </section>
+      <footer id="pie">
+        
+      </footer>
+    </div>
+
+  </body>

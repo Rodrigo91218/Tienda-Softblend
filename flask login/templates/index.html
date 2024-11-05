@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SOFTBLEND</title>
+    <link rel="stylesheet"href="{{ url_for('static', filename='css/styles.css') }}"/>
+    <link rel="icon" href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}" type="image/x-icon"/>
+  </head>
+  <body>
+    <div id="agrupar">
+      <header id="cabecera">
+        <span id="titulo">SOFTBLEND</span>
+      </header>
+      <nav id="menu">
+        <ul>
+          <li><a href="{{url_for('catalogo_cliente')}}">Catalogo</a></li>
+          <li><a href="{{ url_for('login') }}">Iniciar sesion</a></li>
+        </ul>
+      </nav>
+      <section id="seccion">
+        <article>
+          <p>
+            Somos <strong>SoftBlend</strong>, una marca que fusiona elegancia y
+            frescura, ofreciendo perfumes exclusivos para textiles y ambientes.
+            Nuestros aromas están diseñados para transformar cada espacio y cada
+            prenda en una experiencia sensorial única, brindando una sensación de
+            suavidad y bienestar que perdura. Descubrí la magia de nuestros
+            productos y envolvete en la delicadeza de fragancias creadas para
+            enriquecer tus momentos cotidianos.
+          </p>
+        </article>
+      </section>
+      <footer id="pie">
+        Rodrigo Pereira &copy; 2024 SoftBlend. Todos los derechos reservados.
+
+      </footer>
+    </div>
+    <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+
+  </body>
+</html>

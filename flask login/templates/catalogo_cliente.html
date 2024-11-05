@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catalogo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  <link rel="icon" href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}" type="image/x-icon" />
+</head>
+
+<body>
+  <div id="agrupar">
+    <header id="cabecera">
+      <span id="titulo">SOFTBLEND</span>
+      <a href="{{ url_for('ver_carrito') }}" id="carrito-icon">
+        🛒 <span id="carrito-count">{{ carrito_count }}</span>
+      </a>
+    </header>
+    <nav id="menu">
+      <ul>
+        <li><a href="{{url_for('index')}}">Inicio</a></li>
+      </ul>
+    </nav>
+    <section id="seccion">
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Aroma</th>
+            <th>Imagen</th>
+            <th>Stock</th>
+            <th>Precio</th>
+            <th>Agregar al Carrito</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for perfume in perfumes %}
+          <tr>
+            <td>{{ perfume.nombre }}</td>
+            <td>{{ perfume.aroma }}</td>
+            <td>
+              <img src="{{ url_for('static', filename='image/' + perfume.imagen_url) }}" alt="{{ perfume.nombre }}"
+                width="50" />
+            </td>
+            <td>{{ perfume.stock }}</td>
+            <td>{{ perfume.precio }}</td>
+            <td>
+              <form action="{{ url_for('agregar_al_carrito') }}" method="post">
+                <input type="hidden" name="perfume_id" value="{{ perfume.id }}" />
+                <input type="number" name="cantidad" min="1" max="{{ perfume.stock }}" required />
+                <input type="submit" value="Agregar al Carrito" />
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+       <!-- Bloque para mensajes de éxito -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="mensaje_flash">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+    </section>
+    <footer id="pie">
+      Rodrigo Pereira &copy; 2024 SoftBlend. Todos los derechos reservados.
+    </footer>
+  </div>
+</body>
+
+</html>

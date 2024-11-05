@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Admin</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}"
+      type="image/x-icon"
+    />
+  </head>
+  <body>
+    <div id="agrupar">
+      <header id="cabecera">
+        <span id="titulo">Bienvenido, Admin</span>
+      </header>
+      <nav id="menu">
+        <ul>
+          <li>
+            <a href="{{url_for('ver_catalogo')}}">Ver catalago</a>
+          </li>
+          <li>
+            <a href="{{url_for('agregar_producto')}}">Agregar producto</a>
+          </li>
+          <li>
+            <a href="{{url_for('modificar_producto')}}">Modificar producto</a>
+          </li>
+          <li>
+            <a href="{{url_for('eliminar_producto')}}">Eliminar producto</a>
+          </li>
+          <li>
+            <a href="{{url_for('logout')}}">Cerrar Sesión</a>
+          </li>
+        </ul>
+      </nav>
+      <section id="seccion"></section>
+      <footer id="pie"></footer>
+    </div>
+  </body>
+</html>

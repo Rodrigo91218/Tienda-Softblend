@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ver Compra</title>
+    <link rel="stylesheet"href="{{ url_for('static', filename='css/styles.css') }}"/>
+    <link rel="icon" href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}" type="image/x-icon"/>
+</head>
+<body>
+    <div id="agrupar">
+        <header id="cabecera">
+            <span id="titulo">Carrito de Compras</span>
+        </header>
+        <section id="seccion">
+            {% if productos_carrito %}
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Aroma</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in productos_carrito %}
+                        <tr>
+                            <td>{{ item.perfume.nombre }}</td>
+                            <td>{{ item.perfume.aroma }}</td>
+                            <td>{{ item.cantidad }}</td>
+                            <td>{{ item.perfume.precio }}</td>
+                            <td>
+                                <form action="{{ url_for('eliminar_del_carrito') }}" method="post">
+                                    <input type="hidden" name="perfume_id" value="{{ item.perfume.id }}" />
+                                    <input type="submit" value="Eliminar" />
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No hay productos en el carrito.</p>
+            {% endif %}
+            <div>
+                <a href="{{ url_for('catalogo_cliente') }}">Seguir Comprando</a>
+                <button id="abonar-button">Abonar</button>
+            </div>
+        </section>
+        <footer id="pie">
+            Rodrigo Pereira &copy; 2024 SoftBlend. Todos los derechos reservados.
+        </footer>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>

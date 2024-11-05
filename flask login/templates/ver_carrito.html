@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <link rel="stylesheet"href="{{ url_for('static', filename='css/styles.css') }}"/>
+    <link rel="icon" href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}" type="image/x-icon"/>
+</head>
+<body>
+    
+</body>
+</html>
+
+<body>
+  <div id="agrupar">
+    <header id="cabecera">
+      <span id="titulo"> <h1>Carrito de Compras</h1></span>
+    </header>
+    <nav id="menu">
+      <ul>
+        <li><a href="{{url_for('catalogo_cliente')}}">Catalogo</a></li>
+      </ul>
+    </nav>
+    <section id="seccion">
+     
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    {% if productos_carrito %}
+    <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in productos_carrito %}
+          <tr>
+            <td>{{ item.perfume.nombre }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td>${{ item.perfume.precio }}</td>
+            <td>${{ item.subtotal }}</td>
+            <td>
+              <form action="{{ url_for('eliminar_del_carrito', perfume_id=item.perfume.id) }}" method="post">
+                <button type="submit">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3"><strong>Total</strong></td>
+            <td>${{ total }}</td>
+            <td>
+              <form action="{{ url_for('datos_cliente') }}" method="get">
+                <button type="submit">Carga tus datos</button>
+            </form>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    {% else %}
+        <p>No hay productos en el carrito.</p>
+    {% endif %}
+
+    <a href="{{ url_for('catalogo_cliente') }}">Continuar comprando</a>
+    </section>
+    <footer id="pie">
+      
+    </footer>
+  </div>
+
+</body>

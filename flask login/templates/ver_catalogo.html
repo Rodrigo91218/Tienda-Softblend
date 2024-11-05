@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalogo</title>
+    <link rel="stylesheet"href="{{ url_for('static', filename='css/styles.css') }}"/>
+    <link rel="icon" href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}" type="image/x-icon"/>
+  </head>
+  <body>
+    <div id="agrupar">
+      <header id="cabecera">
+        <span id="titulo">SOFTBLEND</span>
+      </header>
+      <nav id="menu">
+        <ul>
+          <li><a href="{{url_for('home')}}">Home</a></li>
+        </ul>
+      </nav>
+      <section id="seccion">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Aroma</th>
+              <th>Imagen</th>
+              <th>Stock</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for perfume in perfumes %}
+            <tr>
+              <td>{{ perfume.id }}</td>
+              <td>{{ perfume.nombre }}</td>
+              <td>{{ perfume.aroma }}</td>
+              <td>
+                <img
+                  src="{{ url_for('static', filename='image/' + perfume.imagen_url) }}"
+                  alt="{{ perfume.nombre }}"
+                  width="50"
+                />
+              </td>
+              <td>{{ perfume.stock }}</td>
+              <td>{{ perfume.precio }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      <footer id="pie">
+        Rodrigo Pereira &copy; 2024 SoftBlend. Todos los derechos reservados.
+      </footer>
+  </div>
+  </body>
+</html>
+
+

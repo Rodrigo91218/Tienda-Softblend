@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agregar producto</title>
+    <link rel="stylesheet"href="{{ url_for('static', filename='css/styles.css') }}"/>
+    <link rel="icon" href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}" type="image/x-icon"/>
+  </head>
+  <body>
+    <div id="agrupar">
+      <header id="cabecera">
+        <span id="titulo">Agregar producto</span>
+      </header>
+      <nav id="menu">
+        <ul>
+          <li>
+            <a href="{{ url_for('home') }}">Inicio</a>
+          </li>
+          <li>
+            <a href="{{ url_for('ver_catalogo') }}">Ver catálogo</a>
+          </li>
+        </ul>
+      </nav>
+      <section id="seccion">
+        <form method="post" enctype="multipart/form-data">
+          Nombre: <input type="text" name="nombre" required /><br />
+          Aroma: <input type="text" name="aroma" required /><br />
+          Imagen: <input type="file" name="imagen" required /><br />
+          Stock: <input type="number" name="stock" required /><br />
+          Precio:
+          <input type="number" name="precio" step="0.01" required /><br />
+          <button type="submit">Agregar Producto</button>
+        </form>
+        {% with messages = get_flashed_messages() %} {% if messages%}
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
+      </section>
+      <footer id="pie"></footer>
+    </div>
+  </body>
+</html>

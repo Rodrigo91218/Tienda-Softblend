@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet"href="{{ url_for('static', filename='css/styles.css') }}"/>
+    <link rel="icon" href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}" type="image/x-icon"/>
+    <title>Eliminar producto</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='image/icon tittle/iconTittle.png') }}"
+      type="image/x-icon"
+    />
+  </head>
+  <body>
+    <div id="agrupar">
+      <header id="cabecera">
+        <span id="titulo">SOFTBLEND</span>
+      </header>
+      <nav id="menu">
+        <ul>
+          <li>
+            <a href="{{ url_for('home') }}">Inicio</a>
+          </li>
+          <li>
+            <a href="{{ url_for('ver_catalogo') }}">Ver catálogo</a>
+          </li>
+        </ul>
+      </nav>
+      <section id="seccion">
+        <form method="POST">
+          <input type="hidden" name="form_type" value="buscar" />
+          <label for="producto_id">Id: </label>
+          <input type="text" id="producto_id" name="producto_id" required />
+          <button type="submit">Buscar Producto</button>
+        </form>
+        {% if producto %}
+
+        <p>Producto encontrado: {{ producto.nombre }} - {{ producto.aroma }}</p>
+
+        <form method="post">
+          <input type="hidden" name="form_type" value="eliminar" />
+          <input type="hidden" name="producto_id" value="{{ producto.id }}" />
+          <button type="submit">Eliminar Producto</button>
+        </form>
+        {% endif %}
+        {% with messages = get_flashed_messages() %} {% if
+          messages%}
+          <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %} {% endwith %}
+      </section>
+      <footer id="pie"></footer>
+    </div>
+  </body>
+</html>
